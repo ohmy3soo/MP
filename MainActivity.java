@@ -1,88 +1,63 @@
-package org.towm.android.lab6;
+package com.mp.lab7;
 
+import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText txtData;
-    Button writeButton;
-    Button clearButton;
-    Button readButton;
-    Button finishButton;
 
+    MediaPlayer mp, mp2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtData = (EditText)findViewById(R.id.txtData);
-        writeButton = (Button)findViewById(R.id.writeButton);
-        clearButton = (Button)findViewById(R.id.clearButton);
-        readButton = (Button)findViewById(R.id.readButton);
-        finishButton = (Button)findViewById(R.id.finishButton);
+        final LinearLayout layout = (LinearLayout)findViewById(R.id.audio1);
+        final LinearLayout layout2 = (LinearLayout)findViewById(R.id.audio2);
+        String tag = (String) layout.getTag();
+        String tag2 = (String) layout2.getTag();
+        final int id_audio = getResources().getIdentifier(tag, "raw", getPackageName());
+        final int id_audio2 = getResources().getIdentifier(tag2, "raw", getPackageName());
 
-        writeButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
-                File sdCard = Environment.getExternalStorageDirectory();
-                File directory = new File (sdCard.getAbsolutePath() + "/MyFiles");
-                directory.mkdirs();
-                File file = new File(directory, "textfile.txt");
-                try{
-                    FileOutputStream fOut = new FileOutputStream(file);
-                    OutputStreamWriter osw = new OutputStreamWriter(fOut);
-                    osw.write(txtData.getText().toString());
-                    osw.close();
-                } catch (Throwable t) {}
-                Toast.makeText(getApplicationContext(), "Done writing SD 'textfile.txt'", Toast.LENGTH_SHORT).show();
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mp2 != null) {
+                    mp2.pause();
+                    layout2.setBackgroundColor(Color.TRANSPARENT);
+                }
+                if(mp == null)
+                    mp = MediaPlayer.create(getApplicationContext(), id_audio);
+                //prepare 과정 생략
+                mp.start();
+                layout.setBackgroundColor(Color.GRAY);
             }
         });
 
-        clearButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
-                txtData.setText("");
+        layout2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mp != null) {
+                    mp.pause();
+                    layout.setBackgroundColor(Color.TRANSPARENT);
+                }
+                if(mp2 == null)
+                    mp2 = MediaPlayer.create(getApplicationContext(), id_audio2);
+                //prepare 과정 생략
+                mp2.start();
+                layout2.setBackgroundColor(Color.GRAY);
             }
         });
+    }
 
-        readButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
-                File sdCard = Environment.getExternalStorageDirectory();
-                File directory = new File (sdCard.getAbsolutePath() + "/MyFiles");
-                directory.mkdirs();
-
-                File file = new File(directory, "textfile.txt");
-                try {
-                    FileInputStream fIn = new FileInputStream(file);
-                    InputStreamReader isr = new InputStreamReader(fIn);
-                    BufferedReader reader = new BufferedReader(isr);
-                    String str="";
-                    StringBuffer buf = new StringBuffer();
-                    while((str = reader.readLine()) != null){
-                        buf.append(str + "\n");
-                    }
-                    isr.close();
-                    txtData.setText(buf.toString());
-                } catch (Throwable t) {}
-                Toast.makeText(getApplicationContext(), "Done reading SD 'textfile.txt'", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        finishButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
-                finish();
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mp.stop();
+        mp2.stop();
     }
 }
