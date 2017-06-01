@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(mp == null)
                     mp = MediaPlayer.create(getApplicationContext(), id_audio);
-                //prepare 과정 생략
                 mp.start();
                 layout.setBackgroundColor(Color.GRAY);
             }
@@ -47,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(mp2 == null)
                     mp2 = MediaPlayer.create(getApplicationContext(), id_audio2);
-                //prepare 과정 생략
                 mp2.start();
                 layout2.setBackgroundColor(Color.GRAY);
             }
